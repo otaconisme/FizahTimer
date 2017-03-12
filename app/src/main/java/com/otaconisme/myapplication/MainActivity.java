@@ -41,6 +41,7 @@ public class MainActivity extends AppCompatActivity {
      * {@link android.support.v4.app.FragmentStatePagerAdapter}.
      */
     private SectionsPagerAdapter mSectionsPagerAdapter;
+    //
     Handler mHandler = new Handler();
     long startTime = 0, totalTime = 0;
     int REFRESH_RATE = 61;
