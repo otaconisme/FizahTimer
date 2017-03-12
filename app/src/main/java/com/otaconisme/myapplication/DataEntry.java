@@ -18,4 +18,9 @@ public class DataEntry {
     public void setTime(long time){
         this.time = time;
     }
+
+    @Override
+    public String toString(){
+        return Util.transformTime(getTime());
+    }
 }
