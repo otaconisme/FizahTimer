@@ -18,6 +18,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+
 public class MainActivity extends AppCompatActivity {
 
     private Handler mHandler = new Handler();
@@ -165,4 +167,20 @@ public class MainActivity extends AppCompatActivity {
             mHandler.postDelayed(this,REFRESH_RATE);
         }
     };
+
+
+    public void generateReport(View view){
+        ArrayList<Double> input = new ArrayList<>();
+        for(DataEntry de : DataListFragment.dataList){
+            input.add( (double) de.getTime() );
+        }
+        TextView mean = (TextView) findViewById(R.id.mean_value);
+        mean.setText(""+Util.getAverage(input));
+        TextView min = (TextView) findViewById(R.id.min_value);
+        min.setText(""+Util.getMin(input));
+        TextView max = (TextView) findViewById(R.id.max_value);
+        max.setText(""+Util.getMax(input));
+        TextView var = (TextView) findViewById(R.id.variance_value);
+        var.setText(""+Util.getVariance(input, Util.getAverage(input)));
+    }
 }
