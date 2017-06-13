@@ -1,6 +1,7 @@
 package com.otaconisme.myapplication;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import static android.R.attr.max;
 
@@ -85,5 +86,11 @@ public class Util {
             result /= input.size();
         }
         return result;
+    }
+
+    public static void updateSpeedAll(ArrayList<DataEntry> dataEntryList, double distance){
+        for(DataEntry dataEntry:dataEntryList){
+            dataEntry.updateSpeed(distance);
+        }
     }
 }
