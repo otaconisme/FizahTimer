@@ -28,6 +28,11 @@ import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
 import com.github.mikephil.charting.utils.ColorTemplate;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+
+import static android.R.attr.data;
+import static android.R.attr.value;
+import static android.R.id.input;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -80,6 +85,8 @@ public class MainActivity extends AppCompatActivity {
         });
         */
 
+        //TODO update stuff when tab is changed
+        //mViewPager.set
         initVar();
     }
 
@@ -133,7 +140,9 @@ public class MainActivity extends AppCompatActivity {
                 case 1:
                     return new TabList();
                 case 2:
-                    return new TabReport();
+                    TabReport tabReport = new TabReport();
+                    //generateChart();
+                    return tabReport;
             }
             return null;
         }
@@ -204,7 +213,7 @@ public class MainActivity extends AppCompatActivity {
     public void generateReport(View view){
         ArrayList<Double> input = new ArrayList<>();
         for(DataEntry de : DataListFragment.dataList){
-            input.add( de.getSpeed() );
+            input.add( de.getSpeed()*3600 );
         }
         TextView mean = (TextView) findViewById(R.id.mean_value);
         mean.setText(""+Util.getAverage(input));
@@ -214,22 +223,68 @@ public class MainActivity extends AppCompatActivity {
         max.setText(""+Util.getMax(input));
         TextView var = (TextView) findViewById(R.id.variance_value);
         var.setText(""+Util.getVariance(input, Util.getAverage(input)));
-        generateChart();
+        generateChart(input);
     }
 
-    public void generateChart(){
+    public void generateChart(ArrayList<Double> inputData){
 
-//set up chart
+        double min = Util.getMin(inputData);
+        double max = Util.getMax(inputData);
+
+        double lowerLimit = Math.round(min/100)*100;
+        double upperLimit = Math.round(max/100)*100;
+
+        double spaces = 5;
+        double spaceSize = (upperLimit - lowerLimit)/spaces;//TODO figure this things out
+
+        HashMap<Double, Double> table = new HashMap<>();
+
+        for(double speed:inputData){
+            for(double limit = lowerLimit; limit<=upperLimit; limit+=spaceSize){
+                if(table.get(limit)==null){
+                    table.put(limit, 0.0);
+                }
+                if(table.get(limit)!=null){
+                    if(speed<limit) {
+                        double count = table.get(limit);
+                        table.put(limit, ++count);
+                    }
+                }
+            }
+        }
+
+//        for(double i=lowerLimit; i<upperLimit-spaceSize; i+=spaceSize){
+//            for(int j=0; j<inputData.size(); j++){
+//                if(inputData.get(j)<i){
+//                    double count = table.get(i);
+//                    table.put(i, count++);
+//                }
+//            }
+//        }
+
+
+
+
+
         ArrayList<BarEntry> yVals1 = new ArrayList<BarEntry>();
-//        for(int i=0; i<DataListFragment.dataList.size(); i++){
-//            float value = (float) DataListFragment.dataList.get(i).getSpeed();
+//        for(int i=0; i<inputData.size(); i++){
+//            float value = (float) (double) inputData.get(i);
 //            yVals1.add(new BarEntry(i, value));
 //        }
 
-        for(int i=0; i<10; i++){
-            float value = (float) i;
-            yVals1.add(new BarEntry(i, value ));
+//        for(double limit = lowerLimit; limit<=upperLimit; limit+=spaceSize){
+//            float yvalue = (float) (double) table.get(limit);
+//            int xvalue = (int) limit;
+//            yVals1.add(new BarEntry(xvalue, yvalue ));
+//        }
+
+        for(int i=0; i<spaces; i++){
+            double limit = lowerLimit + i*spaceSize;
+            float yvalue = (float) (double) table.get(limit);
+            yVals1.add(new BarEntry(i, yvalue ));
         }
+
+
         mChart = (BarChart) findViewById(R.id.chart1);
         mChart.setMaxVisibleValueCount(60);
 

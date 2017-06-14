@@ -7,7 +7,7 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:orientation="vertical"
-    tools:context="com.otaconisme.myapplication.MainActivity$PlaceholderFragment">
+    tools:context="com.otaconisme.myapplication.MainActivity">
 
     <TextView
         android:id="@+id/section_label"
@@ -15,7 +15,22 @@
         android:layout_height="wrap_content"
         android:text="Test report timer test"/>
 
+    <Button
+    android:id="@+id/button_generate_report"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:onClick="generateReport"
+    android:text="@string/button_generate_report_text"/>
+
+    <com.github.mikephil.charting.charts.BarChart
+        android:id="@+id/chart1"
+        android:layout_weight="20"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+    </com.github.mikephil.charting.charts.BarChart>
+
     <LinearLayout
+        android:layout_weight="1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
@@ -35,6 +50,7 @@
     </LinearLayout>
 
     <LinearLayout
+        android:layout_weight="1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
@@ -53,6 +69,7 @@
 
 
     <LinearLayout
+        android:layout_weight="1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
@@ -71,6 +88,8 @@
 
 
     <LinearLayout
+
+        android:layout_weight="1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
@@ -89,6 +108,7 @@
 
 
     <LinearLayout
+        android:layout_weight="2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
@@ -104,18 +124,5 @@
             android:layout_height="wrap_content"
             android:text="0.0"/>
     </LinearLayout>
-
-    <Button
-    android:id="@+id/button_generate_report"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:onClick="generateReport"
-    android:text="@string/button_generate_report_text"/>
-
-    <com.github.mikephil.charting.charts.BarChart
-        android:id="@+id/chart1"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-    </com.github.mikephil.charting.charts.BarChart>
 
 </LinearLayout>
