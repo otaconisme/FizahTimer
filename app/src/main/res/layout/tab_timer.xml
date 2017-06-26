@@ -8,13 +8,13 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     android:gravity="center"
     android:orientation="vertical"
-    tools:context="com.otaconisme.myapplication.MainActivity$PlaceholderFragment">
+    tools:context="com.otaconisme.myapplication.MainActivity">
 
     <TextView
         android:id="@+id/timer_display"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="50sp"
+        android:textSize="80sp"
         android:text="  0:00.000"/>
 
     <Button
@@ -23,5 +23,27 @@
         android:layout_height="wrap_content"
         android:onClick="startTimer"
         android:text="@string/button_start_timer_text"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="2dp"
+        android:layout_height="1dp"
+        android:background="@android:color/darker_gray"/>
+
+    <fragment
+        android:id="@+id/fragment1"
+        android:name="com.otaconisme.myapplication.DataListFragment"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginBottom="8dp"
+        android:layout_weight="1"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="2dp"
+        android:layout_height="1dp"
+        android:background="@android:color/darker_gray"/>
 
 </LinearLayout>

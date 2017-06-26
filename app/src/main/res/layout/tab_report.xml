@@ -9,19 +9,6 @@
     android:orientation="vertical"
     tools:context="com.otaconisme.myapplication.MainActivity">
 
-    <TextView
-        android:id="@+id/section_label"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Test report timer test"/>
-
-    <Button
-    android:id="@+id/button_generate_report"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:onClick="generateReport"
-    android:text="@string/button_generate_report_text"/>
-
     <com.github.mikephil.charting.charts.BarChart
         android:id="@+id/chart1"
         android:layout_weight="20"

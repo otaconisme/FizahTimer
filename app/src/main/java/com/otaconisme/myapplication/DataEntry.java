@@ -1,9 +1,5 @@
 package com.otaconisme.myapplication;
 
-import static android.R.attr.value;
-import static com.otaconisme.myapplication.R.id.distance;
-import static java.lang.Math.round;
-
 /**
  * Created by Zakwan on 3/9/2017.
  */
@@ -11,35 +7,49 @@ import static java.lang.Math.round;
 public class DataEntry {
     private long time;
     private double speed;
+    private double distance;
 
-    DataEntry(long time, double distance){
+    DataEntry(long time, double distance) {
         setTime(time);
-        updateSpeed(distance);
+        setDistance(distance);
+        updateSpeed();
     }
 
-    public long getTime(){
+    public long getTime() {
         return time;
     }
 
-    public void setTime(long time){
+    public void setTime(long time) {
         this.time = time;
     }
 
-    public double getSpeed(){
+    public double getSpeed() {
         return speed;
     }
 
-    private void setSpeed(double speed){
+    private void setSpeed(double speed) {
         this.speed = speed;
     }
 
-    @Override
-    public String toString(){
-        //time in milli second
-        return Util.transformTime(getTime()) + " s @" + String.format("%.2f", getSpeed()*3600) + " km/h";
+    public double getDistance() {
+        return distance;
     }
 
-    public void updateSpeed(double distance){
-        this.setSpeed(distance/this.getTime());
+    public void setDistance(double distance) {
+        if (distance >= 0.0) {
+            this.distance = distance;
+        } else {
+            this.distance = 0.0;
+        }
+    }
+
+    @Override
+    public String toString() {
+        //time in milli second
+        return Util.transformTime(getTime()) + " s @" + String.format("%.2f", getSpeed() * 3600) + " km/h";
+    }
+
+    public void updateSpeed() {
+        this.setSpeed(this.distance / this.getTime());
     }
 }
