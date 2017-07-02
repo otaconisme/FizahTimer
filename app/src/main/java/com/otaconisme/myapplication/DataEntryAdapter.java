@@ -2,6 +2,7 @@ package com.otaconisme.myapplication;
 
 
 import android.content.Context;
+import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -74,7 +75,7 @@ public class DataEntryAdapter extends BaseAdapter implements ListAdapter {
 
         final ViewSwitcher switcher = (ViewSwitcher) view.findViewById(R.id.my_switcher);
         //switcher.showNext(); //or switcher.showPrevious();
-        final TextView textView = (TextView) switcher.findViewById(R.id.data_entry_list);
+        TextView textView = (TextView) switcher.findViewById(R.id.data_entry_list);
         textView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -83,22 +84,32 @@ public class DataEntryAdapter extends BaseAdapter implements ListAdapter {
             }
         });
 
-        final EditText editText = (EditText) switcher.findViewById(R.id.data_entry_list_edit);
-        editText.setOnClickListener((new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                switcher.showNext();
-                DataEntry dataEntry = DataListFragment.dataList.get(i);
-                if (editText.getText() != null) {
-                    double speed = Double.parseDouble(editText.getText().toString());
-                    long time = Double.valueOf(100 / speed).longValue();
-                    dataEntry.setTime(time);
-                    dataEntry.updateSpeed();
-                    textView.setText(dataEntry.toString());
-                }
-                v.requestFocus();
-            }
-        }));
+        EditText editText = (EditText) switcher.findViewById(R.id.data_entry_list_edit);
+//        editText.setOnClickListener((new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                //switcher.reset();
+//                switcher.showNext();
+//                DataEntry dataEntry = DataListFragment.dataList.get(i);
+//                if (editText.getText() != null) {
+//                    double speed = Double.parseDouble(editText.getText().toString());
+//                    long time = Double.valueOf(100 / speed).longValue();
+//                    dataEntry.setTime(time);
+//                    dataEntry.updateSpeed();
+//                    textView.setText(dataEntry.toString());
+//                }
+//                v.requestFocus();
+//            }
+//        }));
+
+//        editText.setOnFocusChangeListener((new View.OnFocusChangeListener() {
+//            @Override
+//            public void onFocusChange(View v, boolean hasFocus) {
+//                if (!hasFocus) {
+//                    switcher.showNext();
+//                }
+//            }
+//        }));
 
         return view;
     }

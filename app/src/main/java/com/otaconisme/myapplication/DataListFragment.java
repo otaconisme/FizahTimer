@@ -2,6 +2,7 @@ package com.otaconisme.myapplication;
 
 import android.app.ListFragment;
 import android.os.Bundle;
+import android.view.ViewGroup;
 
 import java.util.ArrayList;
 
@@ -20,6 +21,7 @@ public class DataListFragment extends ListFragment {
 
         dataList = new ArrayList<>();
         adapter = new DataEntryAdapter(dataList, getActivity());
+        getListView().setDescendantFocusability(ViewGroup.FOCUS_AFTER_DESCENDANTS);
         setListAdapter(adapter);
     }
 }
