@@ -6,7 +6,6 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    android:gravity="center"
     android:orientation="vertical"
     tools:context="com.otaconisme.myapplication.MainActivity">
 
@@ -43,7 +42,7 @@
         android:layout_width="match_parent"
         android:layout_marginTop="10dp"
         android:layout_marginBottom="2dp"
-        android:layout_height="1dp"
+        android:layout_height="10dp"
         android:background="@android:color/darker_gray"/>
 
 </LinearLayout>

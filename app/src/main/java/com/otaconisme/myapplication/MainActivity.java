@@ -2,6 +2,7 @@ package com.otaconisme.myapplication;
 
 import android.os.Handler;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
@@ -13,6 +14,7 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -21,6 +23,8 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity {
 
     private Handler mHandler = new Handler();
+    private DataEntryAdapter dataEntryAdapter = null;
+    private ArrayList<DataEntry> dataList;
     //Constant
     final int REFRESH_RATE = 61;
     final int TOTAL_TAB_COUNT = 2;
@@ -39,6 +43,10 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+
+        dataList = new ArrayList<>();
+        dataEntryAdapter = new DataEntryAdapter(dataList, this);
         setContentView(R.layout.activity_main);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -154,10 +162,19 @@ public class MainActivity extends AppCompatActivity {
             button.setText(getString(R.string.button_start_timer_text));
             mHandler.removeCallbacks(startTimer);
             //update to list
-            DataListFragment.dataList.add(new DataEntry(totalTime, gDistanceInput));
-            DataListFragment.adapter.notifyDataSetChanged();
+
+            dataList.add(new DataEntry(totalTime, gDistanceInput));
+
+//            dataEntryAdapter.notifyDataSetChanged();
+//            //use this to call notifyDataSetChanged from different activity
+            runOnUiThread(new Runnable() {
+                public void run() {
+                    dataEntryAdapter.notifyDataSetChanged();
+                }
+            });
+
             //TODO fix this bug
-            if (DataListFragment.dataList.size() > 1) {
+            if (dataList.size() > 1) {
                 generateReport();
             }
         }
@@ -182,9 +199,10 @@ public class MainActivity extends AppCompatActivity {
 
     public void generateReport() {
         ArrayList<Double> input = new ArrayList<>();
-        for (DataEntry de : DataListFragment.dataList) {
+        for (DataEntry de : dataList) {
             input.add(de.getSpeed() * 3600);
         }
+        //TODO clean this
         TextView mean = (TextView) findViewById(R.id.mean_value);
         mean.setText("" + Util.getAverage(input));
         TextView min = (TextView) findViewById(R.id.min_value);
@@ -197,5 +215,9 @@ public class MainActivity extends AppCompatActivity {
         if (barChartView != null) {
             Util.generateBarChart(input, barChartView);
         }
+    }
+
+    public DataEntryAdapter getDataEntryAdapter(){
+        return dataEntryAdapter;
     }
 }
