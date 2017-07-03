@@ -2,7 +2,6 @@ package com.otaconisme.myapplication;
 
 import android.os.Handler;
 import android.support.design.widget.TabLayout;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
@@ -14,7 +13,6 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -162,21 +160,17 @@ public class MainActivity extends AppCompatActivity {
             button.setText(getString(R.string.button_start_timer_text));
             mHandler.removeCallbacks(startTimer);
             //update to list
-
             dataList.add(new DataEntry(totalTime, gDistanceInput));
 
-//            dataEntryAdapter.notifyDataSetChanged();
-//            //use this to call notifyDataSetChanged from different activity
             runOnUiThread(new Runnable() {
                 public void run() {
                     dataEntryAdapter.notifyDataSetChanged();
+                    //TODO fix this bug
+                    if (dataList.size() > 1) {
+                        generateReport();
+                    }
                 }
             });
-
-            //TODO fix this bug
-            if (dataList.size() > 1) {
-                generateReport();
-            }
         }
     }
 
