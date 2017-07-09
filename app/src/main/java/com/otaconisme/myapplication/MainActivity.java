@@ -1,5 +1,7 @@
 package com.otaconisme.myapplication;
 
+import android.content.Context;
+import android.graphics.Rect;
 import android.os.Handler;
 import android.support.design.widget.TabLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -12,8 +14,11 @@ import android.support.v4.view.ViewPager;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -21,6 +26,8 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity {
 
     private Handler mHandler = new Handler();
+    private DataEntryAdapter dataEntryAdapter = null;
+    private ArrayList<DataEntry> dataList;
     //Constant
     final int REFRESH_RATE = 61;
     final int TOTAL_TAB_COUNT = 2;
@@ -39,6 +46,10 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+
+        dataList = new ArrayList<>();
+        dataEntryAdapter = new DataEntryAdapter(dataList, this);
         setContentView(R.layout.activity_main);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -154,12 +165,17 @@ public class MainActivity extends AppCompatActivity {
             button.setText(getString(R.string.button_start_timer_text));
             mHandler.removeCallbacks(startTimer);
             //update to list
-            DataListFragment.dataList.add(new DataEntry(totalTime, gDistanceInput));
-            DataListFragment.adapter.notifyDataSetChanged();
-            //TODO fix this bug
-            if (DataListFragment.dataList.size() > 1) {
-                generateReport();
-            }
+            dataList.add(new DataEntry(totalTime, gDistanceInput));
+
+            runOnUiThread(new Runnable() {
+                public void run() {
+                    dataEntryAdapter.notifyDataSetChanged();
+                    //TODO fix this bug
+                    if (dataList.size() > 4) {
+                        generateReport();
+                    }
+                }
+            });
         }
     }
 
@@ -182,9 +198,10 @@ public class MainActivity extends AppCompatActivity {
 
     public void generateReport() {
         ArrayList<Double> input = new ArrayList<>();
-        for (DataEntry de : DataListFragment.dataList) {
+        for (DataEntry de : dataList) {
             input.add(de.getSpeed() * 3600);
         }
+        //TODO clean this
         TextView mean = (TextView) findViewById(R.id.mean_value);
         mean.setText("" + Util.getAverage(input));
         TextView min = (TextView) findViewById(R.id.min_value);
@@ -198,4 +215,26 @@ public class MainActivity extends AppCompatActivity {
             Util.generateBarChart(input, barChartView);
         }
     }
+
+    public DataEntryAdapter getDataEntryAdapter() {
+        return dataEntryAdapter;
+    }
+
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent event) {
+        if (event.getAction() == MotionEvent.ACTION_DOWN) {
+            View v = getCurrentFocus();
+            if (v instanceof EditText) {
+                Rect outRect = new Rect();
+                v.getGlobalVisibleRect(outRect);
+                if (!outRect.contains((int) event.getRawX(), (int) event.getRawY())) {
+                    v.clearFocus();
+                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+                }
+            }
+        }
+        return super.dispatchTouchEvent(event);
+    }
+
 }

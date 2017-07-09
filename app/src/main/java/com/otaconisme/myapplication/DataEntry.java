@@ -27,8 +27,16 @@ public class DataEntry {
         return speed;
     }
 
-    private void setSpeed(double speed) {
+    public void setSpeed(double speed) {
         this.speed = speed;
+    }
+
+    public double getSpeedKMH() {
+        return speed * 3600;
+    }
+
+    public void setSpeedKMH(double speed) {
+        this.speed = speed/3600;
     }
 
     public double getDistance() {
@@ -46,7 +54,8 @@ public class DataEntry {
     @Override
     public String toString() {
         //time in milli second
-        return Util.transformTime(getTime()) + " s @" + String.format("%.2f", getSpeed() * 3600) + " km/h";
+        //TODO fix the default locale bug potential
+        return String.format("%.2f", getSpeed() * 3600) + " km/h";
     }
 
     public void updateSpeed() {

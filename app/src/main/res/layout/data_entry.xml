@@ -1,45 +1,58 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="15sp">
 
-    <ViewSwitcher
-        xmlns:android="http://schemas.android.com/apk/res/android"
+    <TextView
+        android:id="@+id/data_entry_list_number"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:paddingLeft="4dp"
+        android:paddingRight="4dp"
+        android:paddingTop="13dp"
+        android:textSize="15sp" />
+
+    <ViewSwitcher xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/my_switcher"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" >
+        android:layout_height="match_parent">
 
         <TextView
             android:id="@+id/data_entry_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:clickable="true"
+            android:paddingLeft="4dp"
+            android:paddingRight="4dp"
+            android:paddingTop="13dp"
+            android:textSize="15sp" />
+
+        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
-
-
-
-        <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
 
             <EditText
                 android:id="@+id/data_entry_list_edit"
-                android:layout_width="match_parent"
+                android:labelFor="@id/data_entry_list_edit"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:inputType="numberDecimal" />
-
+                android:layout_weight="1"
+                android:paddingLeft="4dp"
+                android:paddingRight="4dp"
+                android:background="@android:color/transparent"
+                android:imeOptions="actionDone"
+                android:inputType="phone"
+                android:textSize="15sp" />
 
             <Button
                 android:id="@+id/data_entry_delete_btn"
-                android:layout_width="wrap_content"
+                android:layout_width="50dp"
                 android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:layout_centerVertical="true"
-                android:background="@null"
-                android:layout_alignParentEnd="true"
-                android:text="X"/>
+                android:text="X" />
 
-        </RelativeLayout>
+        </LinearLayout>
 
     </ViewSwitcher>
-
-</RelativeLayout>
+</LinearLayout>

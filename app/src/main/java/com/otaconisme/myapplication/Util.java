@@ -106,9 +106,9 @@ public class Util {
     }
 
     //TODO fix how to get the barchar view
-    public static void generateBarChartSpeed(){
+    public static void generateBarChartSpeed(ArrayList<DataEntry> dataList){
         ArrayList<Double> inputData = new ArrayList<>();
-        for(DataEntry de: DataListFragment.dataList){
+        for(DataEntry de: dataList){
             inputData.add(de.getSpeed());
         }
         //TODO fix
