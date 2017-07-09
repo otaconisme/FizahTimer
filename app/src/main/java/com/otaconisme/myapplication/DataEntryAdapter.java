@@ -6,6 +6,7 @@ import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewParent;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -48,18 +49,27 @@ public class DataEntryAdapter extends BaseAdapter implements ListAdapter {
 
     @Override
     public View getView(final int i, View inputView, ViewGroup viewGroup) {
+
         View view = inputView;
         if (view == null) {
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             view = inflater.inflate(R.layout.data_entry, null);//TODO replace null with something else
         }
 
-        TextView listItemText = (TextView) view.findViewById(data_entry_list);
-        if (listItemText != null) {
-            listItemText.setText((i + 1) + ". " + list.get(i).toString());
+        final ViewSwitcher switcher = (ViewSwitcher) view.findViewById(R.id.my_switcher);
+        final TextView itemText = (TextView) view.findViewById(data_entry_list);
+        final EditText editText = (EditText) view.findViewById(R.id.data_entry_list_edit);
+        Button deleteBtn = (Button) view.findViewById(R.id.data_entry_delete_btn);
+        TextView itemNumber = (TextView) view.findViewById(R.id.data_entry_list_number);
+
+        if (itemNumber != null) {
+            //TODO change string concatenation to string with placeholders
+            itemNumber.setText((i + 1) + ". ");
         }
 
-        Button deleteBtn = (Button) view.findViewById(R.id.data_entry_delete_btn);
+        if (itemText != null) {
+            itemText.setText(list.get(i).toString());
+        }
 
         if (deleteBtn != null) {
             deleteBtn.setOnClickListener(new View.OnClickListener() {
@@ -73,43 +83,45 @@ public class DataEntryAdapter extends BaseAdapter implements ListAdapter {
             });
         }
 
-        final ViewSwitcher switcher = (ViewSwitcher) view.findViewById(R.id.my_switcher);
-        //switcher.showNext(); //or switcher.showPrevious();
-        TextView textView = (TextView) switcher.findViewById(R.id.data_entry_list);
-        textView.setOnClickListener(new View.OnClickListener() {
+        itemText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //TODO fix null pointer exception possibility
+                editText.setText(Double.toString(list.get(i).getSpeedKMH()));
                 switcher.showNext();
                 v.requestFocus();
             }
         });
 
-        EditText editText = (EditText) switcher.findViewById(R.id.data_entry_list_edit);
-//        editText.setOnClickListener((new View.OnClickListener() {
+//        editText.setOnClickListener(new View.OnClickListener() {
 //            @Override
 //            public void onClick(View v) {
-//                //switcher.reset();
-//                switcher.showNext();
-//                DataEntry dataEntry = DataListFragment.dataList.get(i);
-//                if (editText.getText() != null) {
-//                    double speed = Double.parseDouble(editText.getText().toString());
-//                    long time = Double.valueOf(100 / speed).longValue();
-//                    dataEntry.setTime(time);
-//                    dataEntry.updateSpeed();
-//                    textView.setText(dataEntry.toString());
-//                }
-//                v.requestFocus();
+//                listItemText.setText(editText.getText());
+//                //switcher.showNext();
+//                //v.requestFocus();
 //            }
-//        }));
+//        });
 
-//        editText.setOnFocusChangeListener((new View.OnFocusChangeListener() {
-//            @Override
-//            public void onFocusChange(View v, boolean hasFocus) {
-//                if (!hasFocus) {
-//                    switcher.showNext();
-//                }
-//            }
-//        }));
+        editText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus){
+                if(!hasFocus){
+                    try {
+                        double input = Double.parseDouble(editText.getText().toString());
+                        if (!Double.isNaN(input)) {
+                            list.get(i).setSpeedKMH(input);
+                            //TODO does this need to be called in another thread?
+                            notifyDataSetChanged();
+                        }
+                    }catch (Exception e){
+                        //TODO do something
+                    }finally {
+                        switcher.showNext();
+                    }
+                }
+            }
+
+        });
 
         return view;
     }
