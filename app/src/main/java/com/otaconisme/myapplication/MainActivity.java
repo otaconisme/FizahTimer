@@ -23,7 +23,10 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.ViewSwitcher;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+
+import static android.R.id.input;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -177,17 +180,19 @@ public class MainActivity extends AppCompatActivity {
         }else{
 
             EditText editText = (EditText) findViewById(R.id.edit_text_input);
-            double input = Double.parseDouble(editText.getText().toString());
-            editText.setText("");
             try {
-                if (!Double.isNaN(input)) {
-                    dataList.add(new DataEntry(input));
-
-                    notifyDataListChanged();
-
+                String inputMessage = editText.getText().toString();
+                if(!inputMessage.isEmpty()) {
+                    double input = Double.parseDouble(inputMessage);
+                    if (!Double.isNaN(input)) {
+                        dataList.add(new DataEntry(input));
+                        notifyDataListChanged();
+                    }
                 }
             }catch (NullPointerException ne){
                 //do nothing
+            }finally {
+                editText.setText("");
             }
 
         }
