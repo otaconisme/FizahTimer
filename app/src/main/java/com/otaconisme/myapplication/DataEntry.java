@@ -15,6 +15,10 @@ public class DataEntry {
         updateSpeed();
     }
 
+    DataEntry(double speed){
+        setSpeedKMH(speed);
+    }
+
     public long getTime() {
         return time;
     }

@@ -43,7 +43,7 @@
                 android:paddingRight="4dp"
                 android:background="@android:color/transparent"
                 android:imeOptions="actionDone"
-                android:inputType="phone"
+                android:inputType="numberDecimal"
                 android:textSize="15sp" />
 
             <Button

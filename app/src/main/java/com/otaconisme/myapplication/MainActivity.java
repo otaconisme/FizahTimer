@@ -19,7 +19,9 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.ViewSwitcher;
 
 import java.util.ArrayList;
 
@@ -65,7 +67,6 @@ public class MainActivity extends AppCompatActivity {
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
-
 
         /*
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -136,7 +137,7 @@ public class MainActivity extends AppCompatActivity {
         public CharSequence getPageTitle(int position) {
             switch (position) {
                 case 0:
-                    return "Timer";
+                    return "Input";
                 case 1:
                     return "Report";
             }
@@ -155,28 +156,56 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void startTimer(View view) {
-        Button button = (Button) findViewById(R.id.button_start_stop_timer);
-        if (button.getText().equals("Start")) {
-            button.setText(getString(R.string.button_stop_timer_text));
-            startTime = System.currentTimeMillis();
-            mHandler.removeCallbacks(startTimer);
-            mHandler.postDelayed(startTimer, 0);
-        } else {
-            button.setText(getString(R.string.button_start_timer_text));
-            mHandler.removeCallbacks(startTimer);
-            //update to list
-            dataList.add(new DataEntry(totalTime, gDistanceInput));
+        Switch inputSwitch = (Switch) findViewById(R.id.switch_input);
 
-            runOnUiThread(new Runnable() {
-                public void run() {
-                    dataEntryAdapter.notifyDataSetChanged();
-                    //TODO fix this bug
-                    if (dataList.size() > 4) {
-                        generateReport();
-                    }
+        if(!inputSwitch.isChecked()) {
+
+
+            if (getMainButtonText().equals("Start")) {
+                setMainButtonText(getString(R.string.button_stop_timer_text));
+                startTime = System.currentTimeMillis();
+                mHandler.removeCallbacks(startTimer);
+                mHandler.postDelayed(startTimer, 0);
+            } else {
+                setMainButtonText(getString(R.string.button_start_timer_text));
+                mHandler.removeCallbacks(startTimer);
+                //update to list
+                dataList.add(new DataEntry(totalTime, gDistanceInput));
+
+                notifyDataListChanged();
+            }
+        }else{
+
+            EditText editText = (EditText) findViewById(R.id.edit_text_input);
+            double input = Double.parseDouble(editText.getText().toString());
+            editText.setText("");
+            try {
+                if (!Double.isNaN(input)) {
+                    dataList.add(new DataEntry(input));
+
+                    notifyDataListChanged();
+
                 }
-            });
+            }catch (NullPointerException ne){
+                //do nothing
+            }
+
         }
+    }
+
+    public void notifyDataListChanged(){
+
+        runOnUiThread(new Runnable() {
+            public void run() {
+                dataEntryAdapter.notifyDataSetChanged();
+                //TODO fix this bug
+                if (dataList.size() > 4) {
+                    generateReport();
+                }
+            }
+        });
+
+        showHideClearAll();
     }
 
     public void updateTimerDisplay(long totalTime) {
@@ -237,4 +266,31 @@ public class MainActivity extends AppCompatActivity {
         return super.dispatchTouchEvent(event);
     }
 
+    public void setMainButtonText(String text){
+        Button button = (Button) findViewById(R.id.button_start_stop_timer);
+        button.setText(text);
+    }
+
+    public String getMainButtonText(){
+        Button button = (Button) findViewById(R.id.button_start_stop_timer);
+        return button.getText().toString();
+    }
+
+    public void clearAllDataEntry(View view){
+        dataList.clear();
+        notifyDataListChanged();
+    }
+
+    public void showHideClearAll(){
+        ViewSwitcher viewSwitcher = (ViewSwitcher) findViewById(R.id.view_switcher_clear_data_button);
+
+        if(dataList.size()>0){
+            View view = viewSwitcher.getNextView();
+            if(view instanceof Button){
+                viewSwitcher.showNext();
+            }
+        }else{
+            viewSwitcher.showNext();
+        }
+    }
 }
