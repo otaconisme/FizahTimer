@@ -41,6 +41,8 @@
                 android:layout_weight="1"
                 android:paddingLeft="4dp"
                 android:paddingRight="4dp"
+                android:paddingTop="16dp"
+                android:paddingBottom="16dp"
                 android:background="@android:color/transparent"
                 android:imeOptions="actionDone"
                 android:inputType="numberDecimal"

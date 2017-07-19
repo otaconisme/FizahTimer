@@ -19,14 +19,11 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.ToggleButton;
 import android.widget.ViewSwitcher;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-
-import static android.R.id.input;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -159,9 +156,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void startTimer(View view) {
-        Switch inputSwitch = (Switch) findViewById(R.id.switch_input);
+        ToggleButton toggleTimer = (ToggleButton) findViewById(R.id.toggle_timer);
 
-        if(!inputSwitch.isChecked()) {
+        if(toggleTimer.isChecked()) {
 
 
             if (getMainButtonText().equals("Start")) {
@@ -297,5 +294,25 @@ public class MainActivity extends AppCompatActivity {
         }else{
             viewSwitcher.showNext();
         }
+    }
+
+    public void toggleSelectInput(View view){
+        ViewSwitcher inputViewSwitcher = (ViewSwitcher) findViewById(R.id.view_switcher_input);
+        ToggleButton clicked = (ToggleButton) view;
+        ToggleButton unClicked;
+        String clickedText = clicked.getTextOn().toString();
+        if(clickedText.equalsIgnoreCase("timer")) {
+            unClicked = (ToggleButton) findViewById(R.id.toggle_manual);
+            if(inputViewSwitcher.getNextView().getId() == R.id.view_switch_timer_layout){
+                inputViewSwitcher.showNext();
+            }
+        }else{
+            unClicked = (ToggleButton) findViewById(R.id.toggle_timer);
+            if(inputViewSwitcher.getNextView().getId() == R.id.view_switch_manual_edit_layout){
+                inputViewSwitcher.showNext();
+            }
+        }
+        clicked.setChecked(true);
+        unClicked.setChecked(false);
     }
 }

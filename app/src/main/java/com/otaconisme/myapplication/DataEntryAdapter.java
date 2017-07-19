@@ -48,9 +48,8 @@ public class DataEntryAdapter extends BaseAdapter implements ListAdapter {
     }
 
     @Override
-    public View getView(final int i, View inputView, ViewGroup viewGroup) {
+    public View getView(final int i, View view, ViewGroup viewGroup) {
 
-        View view = inputView;
         if (view == null) {
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             view = inflater.inflate(R.layout.data_entry, null);//TODO replace null with something else
@@ -77,6 +76,9 @@ public class DataEntryAdapter extends BaseAdapter implements ListAdapter {
                 public void onClick(View v) {
                     list.remove(i);
                     notifyDataSetChanged();
+                    switcher.reset();
+                    switcher.showNext();
+                    v.clearFocus();
                     //Util.generateBarChartSpeed();
 
                 }
