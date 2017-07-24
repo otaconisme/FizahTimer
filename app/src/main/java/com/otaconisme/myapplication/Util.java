@@ -27,13 +27,7 @@ public class Util {
         int ms,s,m;
 
         m = (int) totalTime/60000;
-        if(m<10) {
-            minute = "  " + m;
-        }else if(m<100){
-            minute = " " + m;
-        }else{
-            minute = "" + m;
-        }
+        minute = String.valueOf(m);
 
         s = (int) (totalTime - m*60000)/1000 ;
         if(s<10){

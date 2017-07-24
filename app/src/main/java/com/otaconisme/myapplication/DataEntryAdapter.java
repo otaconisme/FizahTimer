@@ -1,16 +1,14 @@
 package com.otaconisme.myapplication;
 
-
 import android.content.Context;
-import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewParent;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.ViewSwitcher;
 
@@ -48,22 +46,22 @@ public class DataEntryAdapter extends BaseAdapter implements ListAdapter {
     }
 
     @Override
-    public View getView(final int i, View view, ViewGroup viewGroup) {
+    public View getView(final int i, View view, final ViewGroup viewGroup) {
 
         if (view == null) {
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             view = inflater.inflate(R.layout.data_entry, null);//TODO replace null with something else
         }
 
-        final ViewSwitcher switcher = (ViewSwitcher) view.findViewById(R.id.my_switcher);
+        final ViewSwitcher switcher = (ViewSwitcher) view.findViewById(R.id.data_entry_switcher);
         final TextView itemText = (TextView) view.findViewById(data_entry_list);
         final EditText editText = (EditText) view.findViewById(R.id.data_entry_list_edit);
         Button deleteBtn = (Button) view.findViewById(R.id.data_entry_delete_btn);
         TextView itemNumber = (TextView) view.findViewById(R.id.data_entry_list_number);
 
         if (itemNumber != null) {
-            //TODO change string concatenation to string with placeholders
-            itemNumber.setText((i + 1) + ". ");
+            String number = (i + 1) + ". ";
+            itemNumber.setText(number);
         }
 
         if (itemText != null) {
@@ -76,10 +74,14 @@ public class DataEntryAdapter extends BaseAdapter implements ListAdapter {
                 public void onClick(View v) {
                     list.remove(i);
                     notifyDataSetChanged();
+                    //TODO call method from MainActivity
+                    //MainActivity m = new MainActivity();
+                    //m.notifyDataListChanged();
                     switcher.reset();
                     switcher.showNext();
                     v.clearFocus();
-                    //Util.generateBarChartSpeed();
+                    //TODO generate graph
+                    //Util.generateBarChartSpeed(list);
 
                 }
             });
@@ -88,10 +90,26 @@ public class DataEntryAdapter extends BaseAdapter implements ListAdapter {
         itemText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //TODO fix null pointer exception possibility
-                editText.setText(Double.toString(list.get(i).getSpeedKMH()));
-                switcher.showNext();
-                v.requestFocus();
+                String speed = "";
+                try {
+                    speed = String.valueOf(list.get(i).getSpeedKMH());
+                    editText.setText(speed);
+                }catch (NullPointerException npe){
+                    //do nothing
+                }finally {
+                    //reset viewswitcher for other rows not selected
+                    ListView lv = (ListView) v.getParent().getParent().getParent();
+                    for (int j = 0; j < list.size(); j++){
+                        ViewSwitcher vs = (ViewSwitcher) lv.getChildAt(j).findViewById(R.id.data_entry_switcher);
+                        if(i!=j) {
+                            if(vs.getNextView() instanceof TextView){
+                                vs.showNext();
+                            }
+                        }
+                    }
+                    switcher.showNext();
+                    v.requestFocus();
+                }
             }
         });
 

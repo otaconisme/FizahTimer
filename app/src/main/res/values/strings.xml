@@ -22,5 +22,6 @@
     <string name="max_default">0.0</string>
     <string name="variance_label">variance: </string>
     <string name="variance_default">0.0</string>
+    <string name="button_delete_data_entry_text">X</string>
 
 </resources>

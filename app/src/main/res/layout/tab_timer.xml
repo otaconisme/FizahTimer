@@ -73,7 +73,8 @@
 
             <TextView
                 android:id="@+id/timer_display"
-                android:layout_width="match_parent"
+                android:layout_gravity="center_horizontal"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="75sp"
                 android:text="@string/timer_default"/>
@@ -147,8 +148,8 @@
 
     <View
         android:layout_width="match_parent"
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="2dp"
+        android:layout_marginTop="2dp"
+        android:layout_marginBottom="10dp"
         android:layout_height="1dp"
         android:background="@android:color/darker_gray"/>
 
