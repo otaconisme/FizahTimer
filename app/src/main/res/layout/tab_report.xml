@@ -16,25 +16,12 @@
         android:layout_height="wrap_content">
     </com.github.mikephil.charting.charts.BarChart>
 
-    <LinearLayout
-        android:layout_weight="1"
+    <com.github.mikephil.charting.charts.BarChart
+        android:id="@+id/chart2"
+        android:layout_weight="20"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="distance: "/>
-
-        <EditText
-            android:id="@+id/distance"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:hint="@string/distance_hint"
-            android:text="100"
-            android:inputType="phone" />
-
-    </LinearLayout>
+    </com.github.mikephil.charting.charts.BarChart>
 
     <LinearLayout
         android:layout_weight="1"
@@ -45,13 +32,13 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="mean: "/>
+            android:text="@string/mean_label"/>
 
         <TextView
             android:id="@+id/mean_value"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="0.0"/>
+            android:text="@string/mean_default"/>
     </LinearLayout>
 
 
@@ -64,13 +51,13 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="min: "/>
+            android:text="@string/min_label"/>
 
         <TextView
             android:id="@+id/min_value"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="0.0"/>
+            android:text="@string/min_default"/>
     </LinearLayout>
 
 
@@ -84,13 +71,13 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="max: "/>
+            android:text="@string/max_label"/>
 
         <TextView
             android:id="@+id/max_value"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="0.0"/>
+            android:text="@string/max_default"/>
     </LinearLayout>
 
 
@@ -103,13 +90,13 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="variance: "/>
+            android:text="@string/variance_label"/>
 
         <TextView
             android:id="@+id/variance_value"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="0.0"/>
+            android:text="@string/variance_default"/>
     </LinearLayout>
 
 </LinearLayout>

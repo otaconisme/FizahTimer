@@ -12,6 +12,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -27,13 +28,15 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
-    private Handler mHandler = new Handler();
-    private DataEntryAdapter dataEntryAdapter = null;
-    private ArrayList<DataEntry> dataList;
     //Constant
     final int REFRESH_RATE = 61;
     final int TOTAL_TAB_COUNT = 2;
     final double distanceInputDefault = 100.00;
+
+    private Handler mHandler = new Handler();
+    private DataEntryAdapter dataEntryAdapter = null;
+    private ArrayList<DataEntry> dataList;
+
     //var
     long startTime = 0, totalTime = 0;
     double gDistanceInput = distanceInputDefault;
@@ -48,7 +51,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
 
         dataList = new ArrayList<>();
         dataEntryAdapter = new DataEntryAdapter(dataList, this);
@@ -145,53 +147,40 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    //TODO: update speed when distance is changed
-    private boolean isDistanceChanged() {
-//        EditText et = (EditText) findViewById(R.id.distance);
-//        double currentDistance = Double.parseDouble(et.getText().toString());
-//        if(currentDistance==gDistanceInput){
-//            return false;
-//        }
-        return true;
+    public void startTimer(View view) {
+        Button startButton = (Button) findViewById(R.id.button_start_stop_timer);
+        EditText distance = (EditText) findViewById(R.id.edit_text_distance_input);
+        gDistanceInput = Double.parseDouble(distance.getText().toString());
+        if (startButton.getText().equals(getString(R.string.button_start_timer_text))) {
+            startButton.setText(getString(R.string.button_stop_timer_text));
+            startTime = System.currentTimeMillis();
+            mHandler.removeCallbacks(startTimer);
+            mHandler.postDelayed(startTimer, 0);
+        } else {
+            startButton.setText(getString(R.string.button_start_timer_text));
+            mHandler.removeCallbacks(startTimer);
+            //update to list
+            dataList.add(new DataEntry(totalTime, gDistanceInput));
+
+            notifyDataListChanged();
+        }
     }
 
-    public void startTimer(View view) {
-        ToggleButton toggleTimer = (ToggleButton) findViewById(R.id.toggle_timer);
-
-        if(toggleTimer.isChecked()) {
-
-
-            if (getMainButtonText().equals("Start")) {
-                setMainButtonText(getString(R.string.button_stop_timer_text));
-                startTime = System.currentTimeMillis();
-                mHandler.removeCallbacks(startTimer);
-                mHandler.postDelayed(startTimer, 0);
-            } else {
-                setMainButtonText(getString(R.string.button_start_timer_text));
-                mHandler.removeCallbacks(startTimer);
-                //update to list
-                dataList.add(new DataEntry(totalTime, gDistanceInput));
-
-                notifyDataListChanged();
-            }
-        }else{
-
-            EditText editText = (EditText) findViewById(R.id.edit_text_input);
-            try {
-                String inputMessage = editText.getText().toString();
-                if(!inputMessage.isEmpty()) {
-                    double input = Double.parseDouble(inputMessage);
-                    if (!Double.isNaN(input)) {
-                        dataList.add(new DataEntry(input));
-                        notifyDataListChanged();
-                    }
+    public void enterValue(View view){
+        EditText editText = (EditText) findViewById(R.id.edit_text_input);
+        try {
+            String inputMessage = editText.getText().toString();
+            if(!inputMessage.isEmpty()) {
+                double input = Double.parseDouble(inputMessage);
+                if (!Double.isNaN(input)) {
+                    dataList.add(new DataEntry(input));
+                    notifyDataListChanged();
                 }
-            }catch (NullPointerException ne){
-                //do nothing
-            }finally {
-                editText.setText("");
             }
-
+        }catch (NullPointerException ne){
+            //do nothing
+        }finally {
+            editText.setText("");
         }
     }
 
@@ -232,15 +221,14 @@ public class MainActivity extends AppCompatActivity {
         for (DataEntry de : dataList) {
             input.add(de.getSpeed() * 3600);
         }
-        //TODO clean this
         TextView mean = (TextView) findViewById(R.id.mean_value);
-        mean.setText("" + Util.getAverage(input));
+        mean.setText( String.valueOf(Util.getAverage(input)) );
         TextView min = (TextView) findViewById(R.id.min_value);
-        min.setText("" + Util.getMin(input));
+        min.setText( String.valueOf(Util.getMin(input)) );
         TextView max = (TextView) findViewById(R.id.max_value);
-        max.setText("" + Util.getMax(input));
+        max.setText( String.valueOf(Util.getMax(input)) );
         TextView var = (TextView) findViewById(R.id.variance_value);
-        var.setText("" + Util.getVariance(input, Util.getAverage(input)));
+        var.setText( String.valueOf(Util.getVariance(input, Util.getAverage(input))) );
         View barChartView = findViewById(R.id.chart1);
         if (barChartView != null) {
             Util.generateBarChart(input, barChartView);
@@ -268,16 +256,6 @@ public class MainActivity extends AppCompatActivity {
         return super.dispatchTouchEvent(event);
     }
 
-    public void setMainButtonText(String text){
-        Button button = (Button) findViewById(R.id.button_start_stop_timer);
-        button.setText(text);
-    }
-
-    public String getMainButtonText(){
-        Button button = (Button) findViewById(R.id.button_start_stop_timer);
-        return button.getText().toString();
-    }
-
     public void clearAllDataEntry(View view){
         dataList.clear();
         notifyDataListChanged();
@@ -296,8 +274,20 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    public void editDistance(View view){
+        final EditText distance = (EditText) findViewById(R.id.edit_text_distance_input);
+        distance.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                gDistanceInput = Double.parseDouble(distance.getText().toString());
+                return true;
+            }
+        });
+    }
+
     public void toggleSelectInput(View view){
         ViewSwitcher inputViewSwitcher = (ViewSwitcher) findViewById(R.id.view_switcher_input);
+        ViewSwitcher inputViewSwitcherButton = (ViewSwitcher) findViewById(R.id.view_switcher_input_button);
         ToggleButton clicked = (ToggleButton) view;
         ToggleButton unClicked;
         String clickedText = clicked.getTextOn().toString();
@@ -305,11 +295,13 @@ public class MainActivity extends AppCompatActivity {
             unClicked = (ToggleButton) findViewById(R.id.toggle_manual);
             if(inputViewSwitcher.getNextView().getId() == R.id.view_switch_timer_layout){
                 inputViewSwitcher.showNext();
+                inputViewSwitcherButton.showNext();
             }
         }else{
             unClicked = (ToggleButton) findViewById(R.id.toggle_timer);
             if(inputViewSwitcher.getNextView().getId() == R.id.view_switch_manual_edit_layout){
                 inputViewSwitcher.showNext();
+                inputViewSwitcherButton.showNext();
             }
         }
         clicked.setChecked(true);

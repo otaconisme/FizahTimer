@@ -1,10 +1,26 @@
 <resources>
-    <string name="app_name">My Application</string>
+    <string name="app_name">Spot Speed</string>
     <string name="action_settings">Settings</string>
     <string name="section_format">Hello World from section: %1$d</string>
     <string name="button_start_timer_text">Start</string>
     <string name="button_stop_timer_text">Stop</string>
     <string name="button_generate_report_text">Generate</string>
+    <string name="toggle_timer_text">TIMER</string>
+    <string name="toggle_manual_text">MANUAL</string>
+    <string name="distance_label">Distance: </string>
+    <string name="distance_default">100</string>
     <string name="distance_hint">distance (m)</string>
+    <string name="timer_default">  0:00.000</string>
+    <string name="manual_hint">(km/h)</string>
+    <string name="button_manual_enter_text">ENTER</string>
+    <string name="button_clear_all_text">CLEAR ALL</string>
+    <string name="mean_label">mean: </string>
+    <string name="mean_default">0.0</string>
+    <string name="min_label">min: </string>
+    <string name="min_default">0.0</string>
+    <string name="max_label">max: </string>
+    <string name="max_default">0.0</string>
+    <string name="variance_label">variance: </string>
+    <string name="variance_default">0.0</string>
 
 </resources>
