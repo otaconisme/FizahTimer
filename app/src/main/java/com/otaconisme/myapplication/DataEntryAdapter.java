@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewParent;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -24,10 +25,19 @@ public class DataEntryAdapter extends BaseAdapter implements ListAdapter {
 
     private ArrayList<DataEntry> list = new ArrayList<>();
     private Context context;
+    private int selectedIndex = -1;
 
     public DataEntryAdapter(ArrayList<DataEntry> list, Context context) {
         this.list = list;
         this.context = context;
+    }
+
+    public void setSelectedIndex(int selectedIndex){
+        this.selectedIndex = selectedIndex;
+    }
+
+    public int getSelectedIndex(){
+        return selectedIndex;
     }
 
     @Override
@@ -50,7 +60,8 @@ public class DataEntryAdapter extends BaseAdapter implements ListAdapter {
 
         if (view == null) {
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            view = inflater.inflate(R.layout.data_entry, null);//TODO replace null with something else
+            final ViewGroup nullParent = null;
+            view = inflater.inflate(R.layout.data_entry, nullParent);
         }
 
         final ViewSwitcher switcher = (ViewSwitcher) view.findViewById(R.id.data_entry_switcher);
@@ -73,69 +84,55 @@ public class DataEntryAdapter extends BaseAdapter implements ListAdapter {
                 @Override
                 public void onClick(View v) {
                     list.remove(i);
-                    notifyDataSetChanged();
-                    //TODO call method from MainActivity
-                    //MainActivity m = new MainActivity();
-                    //m.notifyDataListChanged();
                     switcher.reset();
                     switcher.showNext();
                     v.clearFocus();
-                    //TODO generate graph
-                    //Util.generateBarChartSpeed(list);
-
+                    ((MainActivity)context).notifyDataListChanged();
                 }
             });
         }
 
-        itemText.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String speed = "";
-                try {
-                    speed = String.valueOf(list.get(i).getSpeedKMH());
-                    editText.setText(speed);
-                }catch (NullPointerException npe){
-                    //do nothing
-                }finally {
-                    //reset viewswitcher for other rows not selected
-                    ListView lv = (ListView) v.getParent().getParent().getParent();
-                    for (int j = 0; j < list.size(); j++){
+        //check if view is selected
+        if(selectedIndex!=i){
+            switcher.setDisplayedChild(0);
+        }else{
+            switcher.setDisplayedChild(1);
+            //fix for edittext become empty after scrolling for a while
+            String speed = String.valueOf(list.get(i).getSpeedKMH());
+            editText.setText(speed);
+        }
+
+        if(itemText!=null) {
+            itemText.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    editText.setText(String.valueOf(list.get(i).getSpeedKMH()));
+                    selectedIndex = i;
+                    //reset other view to not selected
+                    ListView lv = getParentListView(v.getParent());
+                    for (int j = 0; j < lv.getChildCount(); j++) {
                         ViewSwitcher vs = (ViewSwitcher) lv.getChildAt(j).findViewById(R.id.data_entry_switcher);
-                        if(i!=j) {
-                            if(vs.getNextView() instanceof TextView){
-                                vs.showNext();
-                            }
-                        }
+                        vs.setDisplayedChild(0);
                     }
                     switcher.showNext();
                     v.requestFocus();
                 }
-            }
-        });
-
-//        editText.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                listItemText.setText(editText.getText());
-//                //switcher.showNext();
-//                //v.requestFocus();
-//            }
-//        });
+            });
+        }
 
         editText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
-            public void onFocusChange(View v, boolean hasFocus){
-                if(!hasFocus){
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus) {
                     try {
                         double input = Double.parseDouble(editText.getText().toString());
                         if (!Double.isNaN(input)) {
                             list.get(i).setSpeedKMH(input);
-                            //TODO does this need to be called in another thread?
-                            notifyDataSetChanged();
+                            ((MainActivity)context).notifyDataListChanged();
                         }
-                    }catch (Exception e){
+                    } catch (Exception e) {
                         //TODO do something
-                    }finally {
+                    } finally {
                         switcher.showNext();
                     }
                 }
@@ -144,5 +141,13 @@ public class DataEntryAdapter extends BaseAdapter implements ListAdapter {
         });
 
         return view;
+    }
+
+    private ListView getParentListView(ViewParent vp){
+        if(vp instanceof  ListView){
+            return (ListView) vp;
+        }else{
+            return getParentListView(vp.getParent());
+        }
     }
 }

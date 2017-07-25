@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal"
     android:layout_width="match_parent"
-    android:layout_height="15sp">
+    android:layout_height="15sp"
+    android:orientation="horizontal">
 
     <TextView
         android:id="@+id/data_entry_list_number"
@@ -18,15 +18,15 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <TextView
-            android:id="@+id/data_entry_list"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:clickable="true"
-            android:paddingLeft="4dp"
-            android:paddingRight="4dp"
-            android:paddingTop="13dp"
-            android:textSize="15sp" />
+            <TextView
+                android:id="@+id/data_entry_list"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clickable="true"
+                android:paddingLeft="4dp"
+                android:paddingRight="4dp"
+                android:paddingTop="13dp"
+                android:textSize="15sp" />
 
         <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
             android:layout_width="match_parent"
@@ -35,17 +35,17 @@
 
             <EditText
                 android:id="@+id/data_entry_list_edit"
-                android:labelFor="@id/data_entry_list_edit"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:paddingLeft="4dp"
-                android:paddingRight="4dp"
-                android:paddingTop="16dp"
-                android:paddingBottom="16dp"
                 android:background="@android:color/transparent"
                 android:imeOptions="actionDone"
                 android:inputType="numberDecimal"
+                android:labelFor="@id/data_entry_list_edit"
+                android:paddingBottom="16dp"
+                android:paddingLeft="4dp"
+                android:paddingRight="4dp"
+                android:paddingTop="16dp"
                 android:textSize="15sp" />
 
             <Button

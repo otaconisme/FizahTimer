@@ -21,58 +21,58 @@ public class Util {
 
     public static BarChart barChart;
 
-    public static String transformTime(long totalTime){
+    public static String transformTime(long totalTime) {
 
         String mili, second, minute;
-        int ms,s,m;
+        int ms, s, m;
 
-        m = (int) totalTime/60000;
+        m = (int) totalTime / 60000;
         minute = String.valueOf(m);
 
-        s = (int) (totalTime - m*60000)/1000 ;
-        if(s<10){
-            second = "0"+s;
-        }else {
+        s = (int) (totalTime - m * 60000) / 1000;
+        if (s < 10) {
+            second = "0" + s;
+        } else {
             second = "" + s;
         }
 
-        ms = (int) totalTime%1000;
-        if(ms>99){
+        ms = (int) totalTime % 1000;
+        if (ms > 99) {
             mili = "" + ms;
-        }else if(ms>9){
+        } else if (ms > 9) {
             mili = "0" + ms;
-        }else {
+        } else {
             mili = "00" + ms;
         }
-        return minute + ":" +second +"." + mili;
+        return minute + ":" + second + "." + mili;
     }
 
-    public static double getMax(ArrayList<Double> input){
+    public static double getMax(ArrayList<Double> input) {
         double max = 0.0;
-        for(double in: input){
-            if(in>max){
+        for (double in : input) {
+            if (in > max) {
                 max = in;
             }
         }
         return max;
     }
 
-    public static double getMin(ArrayList<Double> input){
+    public static double getMin(ArrayList<Double> input) {
         double min = 0.0;
-        for(double in: input){
-            if(min==0.0){
+        for (double in : input) {
+            if (min == 0.0) {
                 min = in;
             }
-            if(in<min){
+            if (in < min) {
                 min = in;
             }
         }
         return min;
     }
 
-    public static double getAverage(ArrayList<Double> input){
+    public static double getAverage(ArrayList<Double> input) {
         double result = 0.0;
-        if(input.size()>0) {
+        if (input.size() > 0) {
             for (double in : input) {
                 result += in;
             }
@@ -83,7 +83,7 @@ public class Util {
 
     public static double getVariance(ArrayList<Double> input, Double average) {
         double result = 0.0;
-        if (input.size() > 0){
+        if (input.size() > 0) {
             for (double in : input) {
                 result += Math.abs(in - average);
             }
@@ -92,45 +92,45 @@ public class Util {
         return result;
     }
 
-    public static void updateSpeedAll(ArrayList<DataEntry> dataEntryList, double distance){
-        for(DataEntry dataEntry:dataEntryList){
+    public static void updateSpeedAll(ArrayList<DataEntry> dataEntryList, double distance) {
+        for (DataEntry dataEntry : dataEntryList) {
             dataEntry.setDistance(distance);
             dataEntry.updateSpeed();
         }
     }
 
     //TODO fix how to get the barchar view
-    public static void generateBarChartSpeed(ArrayList<DataEntry> dataList){
+    public static void generateBarChartSpeed(ArrayList<DataEntry> dataList) {
         ArrayList<Double> inputData = new ArrayList<>();
-        for(DataEntry de: dataList){
+        for (DataEntry de : dataList) {
             inputData.add(de.getSpeed());
         }
         //TODO fix
-        if(inputData.size()>1) {
+        if (inputData.size() > 1) {
             generateBarChart(inputData, barChart);
         }
     }
 
-    public static void generateBarChart(ArrayList<Double> inputData, View barChartView){
+    public static void generateBarChart(ArrayList<Double> inputData, View barChartView) {
 
         double min = Util.getMin(inputData);
         double max = Util.getMax(inputData);
 
-        double lowerLimit = Math.round(min/100)*100;
-        double upperLimit = Math.round(max/100)*100;
+        double lowerLimit = Math.round(min / 100) * 100;
+        double upperLimit = Math.round(max / 100) * 100;
 
         double spaces = 5;
-        double spaceSize = (upperLimit - lowerLimit)/spaces;//TODO figure this things out
+        double spaceSize = (upperLimit - lowerLimit) / spaces;//TODO figure this things out
 
         HashMap<Double, Double> table = new HashMap<>();
 
-        for(double speed:inputData){
-            for(double limit = lowerLimit; limit<=upperLimit; limit+=spaceSize){
-                if(table.get(limit)==null){
+        for (double speed : inputData) {
+            for (double limit = lowerLimit; limit <= upperLimit; limit += spaceSize) {
+                if (table.get(limit) == null) {
                     table.put(limit, 0.0);
                 }
-                if(table.get(limit)!=null){
-                    if(speed<limit) {
+                if (table.get(limit) != null) {
+                    if (speed < limit) {
                         double count = table.get(limit);
                         table.put(limit, ++count);
                     }
@@ -140,15 +140,15 @@ public class Util {
 
         ArrayList<BarEntry> yVals1 = new ArrayList<>();
 
-        for(int i=0; i<spaces; i++){
-            double limit = lowerLimit + i*spaceSize;
+        for (int i = 0; i < spaces; i++) {
+            double limit = lowerLimit + i * spaceSize;
             float yvalue = (float) (double) table.get(limit);
-            yVals1.add(new BarEntry(i, yvalue ));
+            yVals1.add(new BarEntry(i, yvalue));
         }
 
 
         //mChart = (BarChart) findViewById(R.id.chart1);
-        if(barChart==null) {
+        if (barChart == null) {
             barChart = (BarChart) barChartView;
 
             barChart.setMaxVisibleValueCount(60);
@@ -173,7 +173,7 @@ public class Util {
 
         if (barChart.getData() != null &&
                 barChart.getData().getDataSetCount() > 0) {
-            set1 = (BarDataSet)barChart.getData().getDataSetByIndex(0);
+            set1 = (BarDataSet) barChart.getData().getDataSetByIndex(0);
             set1.setValues(yVals1);
             barChart.getData().notifyDataChanged();
             barChart.notifyDataSetChanged();
