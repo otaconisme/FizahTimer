@@ -48,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
     double gDistanceInput = distanceInputDefault;
 
     @Override
-    protected  void onPause() {
+    protected void onPause() {
         super.onPause();
         writeToDisk();
     }
@@ -335,17 +335,17 @@ public class MainActivity extends AppCompatActivity {
         unClicked.setChecked(false);
     }
 
-    protected void writeToDisk(){
+    protected void writeToDisk() {
 
         String filename = "myfile";
         FileOutputStream outputStream;
         String output;
 
         try {
-            if(dataList.size()>0){
+            if (dataList.size() > 0) {
                 outputStream = openFileOutput(filename, Context.MODE_PRIVATE);
-                for(int i=0; i<dataList.size(); i++) {
-                    output = Double.toString(dataList.get(i).getSpeedKMH()) +"\n";
+                for (int i = 0; i < dataList.size(); i++) {
+                    output = Double.toString(dataList.get(i).getSpeedKMH()) + "\n";
                     outputStream.write(output.getBytes());
                 }
                 outputStream.close();
@@ -355,8 +355,8 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    protected void readFromDisk(){
-        File file = new File(getFilesDir(),"myfile");
+    protected void readFromDisk() {
+        File file = new File(getFilesDir(), "myfile");
 
 //Read text from file
 //        StringBuilder text = new StringBuilder();
@@ -373,10 +373,9 @@ public class MainActivity extends AppCompatActivity {
 //                text.append('\n');
             }
             br.close();
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             //You'll need to add proper error handling here
-        }catch (Exception e){
+        } catch (Exception e) {
             //TODO catch the correct exception
             ///
         }
