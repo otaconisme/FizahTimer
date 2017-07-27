@@ -31,15 +31,6 @@ public class DataEntryAdapter extends BaseAdapter implements ListAdapter {
         this.list = list;
         this.context = context;
     }
-
-    public void setSelectedIndex(int selectedIndex){
-        this.selectedIndex = selectedIndex;
-    }
-
-    public int getSelectedIndex(){
-        return selectedIndex;
-    }
-
     @Override
     public int getCount() {
         return list.size();
@@ -133,6 +124,7 @@ public class DataEntryAdapter extends BaseAdapter implements ListAdapter {
                     } catch (Exception e) {
                         //TODO do something
                     } finally {
+                        selectedIndex=-1;//reset
                         switcher.showNext();
                     }
                 }

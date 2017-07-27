@@ -4,6 +4,7 @@ import android.view.View;
 
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
@@ -116,24 +117,38 @@ public class Util {
         double min = Util.getMin(inputData);
         double max = Util.getMax(inputData);
 
-        double lowerLimit = Math.round(min / 100) * 100;
-        double upperLimit = Math.round(max / 100) * 100;
+        double lowerLimit = Math.floor(min / 10) * 10;
+        double upperLimit = Math.ceil(max / 10) * 10;
+
 
         double spaces = 5;
+        if (inputData.size() < 5) {
+            spaces = inputData.size();
+        }
+        if (spaces <= 0) {
+            spaces = 1;
+        }
         double spaceSize = (upperLimit - lowerLimit) / spaces;//TODO figure this things out
 
         HashMap<Double, Double> table = new HashMap<>();
 
         for (double speed : inputData) {
             for (double limit = lowerLimit; limit <= upperLimit; limit += spaceSize) {
+//                if (table.get(limit) == null) {
+//                    table.put(limit, 0.0);
+//                }
+//                if (table.get(limit) != null) {
+//                    if (speed < limit) {
+//                        double count = table.get(limit);
+//                        table.put(limit, ++count);
+//                    }
+//                }
                 if (table.get(limit) == null) {
                     table.put(limit, 0.0);
                 }
-                if (table.get(limit) != null) {
-                    if (speed < limit) {
-                        double count = table.get(limit);
-                        table.put(limit, ++count);
-                    }
+
+                if (speed >= limit && speed < (limit + spaceSize)) {
+                    table.put(limit, table.get(limit) + 1);
                 }
             }
         }
@@ -143,7 +158,7 @@ public class Util {
         for (int i = 0; i < spaces; i++) {
             double limit = lowerLimit + i * spaceSize;
             float yvalue = (float) (double) table.get(limit);
-            yVals1.add(new BarEntry(i, yvalue));
+            yVals1.add(new BarEntry(i+1, yvalue));
         }
 
 
@@ -157,18 +172,28 @@ public class Util {
 
             barChart.setDrawBarShadow(false);
             barChart.setDrawGridBackground(false);
+
+
+            XAxis xAxis = barChart.getXAxis();
+            xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+            xAxis.setDrawGridLines(false);
+
+            YAxis yAxisLeft = barChart.getAxisLeft();
+            yAxisLeft.setGranularityEnabled(true);
+            yAxisLeft.setGranularity(1.000f);
+
+            YAxis yAxisRight = barChart.getAxisRight();
+            yAxisRight.setGranularityEnabled(true);
+            yAxisRight.setGranularity(1.000f);
+            // add a nice and smooth animation
+
+            barChart.getLegend().setEnabled(false);
+
+            barChart.getAxisLeft().setDrawGridLines(false);
+
         }
 
-        XAxis xAxis = barChart.getXAxis();
-        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
-        xAxis.setDrawGridLines(false);
-
-        // add a nice and smooth animation
         barChart.animateY(2500);
-
-        barChart.getLegend().setEnabled(false);
-
-        barChart.getAxisLeft().setDrawGridLines(false);
         BarDataSet set1;
 
         if (barChart.getData() != null &&

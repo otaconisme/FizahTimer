@@ -92,7 +92,6 @@
                 android:layout_height="18sp"/>
 
             <EditText
-                android:onClick="enterValue"
                 android:id="@+id/edit_text_input"
                 android:textSize="70sp"
                 android:imeOptions="actionSend"

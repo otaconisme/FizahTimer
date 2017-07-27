@@ -17,6 +17,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
@@ -24,6 +25,11 @@ import android.widget.TextView;
 import android.widget.ToggleButton;
 import android.widget.ViewSwitcher;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
@@ -42,6 +48,12 @@ public class MainActivity extends AppCompatActivity {
     double gDistanceInput = distanceInputDefault;
 
     @Override
+    protected  void onPause() {
+        super.onPause();
+        writeToDisk();
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
         //destroy thread;
@@ -54,6 +66,7 @@ public class MainActivity extends AppCompatActivity {
 
         dataList = new ArrayList<>();
         dataEntryAdapter = new DataEntryAdapter(dataList, this);
+        readFromDisk();
         setContentView(R.layout.activity_main);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -80,6 +93,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         */
+
     }
 
 
@@ -166,31 +180,32 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void enterValue(View view){
+    public void enterValue(View view) {
         EditText editText = (EditText) findViewById(R.id.edit_text_input);
         try {
             String inputMessage = editText.getText().toString();
-            if(!inputMessage.isEmpty()) {
+            if (!inputMessage.isEmpty()) {
                 double input = Double.parseDouble(inputMessage);
                 if (!Double.isNaN(input)) {
                     dataList.add(new DataEntry(input));
                     notifyDataListChanged();
                 }
             }
-        }catch (NullPointerException ne){
+        } catch (NullPointerException ne) {
             //do nothing
-        }finally {
+        } finally {
             editText.setText("");
         }
     }
 
-    public void notifyDataListChanged(){
+    public void notifyDataListChanged() {
 
         runOnUiThread(new Runnable() {
             public void run() {
                 dataEntryAdapter.notifyDataSetChanged();
-                //TODO fix this bug
-                if (dataList.size() > 4) {
+//                ListView lv = (ListView) findViewById(R.id.fragment1);
+//                lv.setSelection(dataEntryAdapter.getCount() - 1);
+                if (dataList.size() > 0) {
                     generateReport();
                 }
             }
@@ -219,16 +234,16 @@ public class MainActivity extends AppCompatActivity {
     public void generateReport() {
         ArrayList<Double> input = new ArrayList<>();
         for (DataEntry de : dataList) {
-            input.add(de.getSpeed() * 3600);
+            input.add(de.getSpeedKMH());
         }
         TextView mean = (TextView) findViewById(R.id.mean_value);
-        mean.setText( String.valueOf(Util.getAverage(input)) );
+        mean.setText(String.valueOf(Util.getAverage(input)));
         TextView min = (TextView) findViewById(R.id.min_value);
-        min.setText( String.valueOf(Util.getMin(input)) );
+        min.setText(String.valueOf(Util.getMin(input)));
         TextView max = (TextView) findViewById(R.id.max_value);
-        max.setText( String.valueOf(Util.getMax(input)) );
+        max.setText(String.valueOf(Util.getMax(input)));
         TextView var = (TextView) findViewById(R.id.variance_value);
-        var.setText( String.valueOf(Util.getVariance(input, Util.getAverage(input))) );
+        var.setText(String.valueOf(Util.getVariance(input, Util.getAverage(input))));
         View barChartView = findViewById(R.id.chart1);
         if (barChartView != null) {
             Util.generateBarChart(input, barChartView);
@@ -248,7 +263,6 @@ public class MainActivity extends AppCompatActivity {
                 v.getGlobalVisibleRect(outRect);
                 if (!outRect.contains((int) event.getRawX(), (int) event.getRawY())) {
                     v.clearFocus();
-                    dataEntryAdapter.setSelectedIndex(-1);//unselect
                     InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                     imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
                 }
@@ -257,25 +271,25 @@ public class MainActivity extends AppCompatActivity {
         return super.dispatchTouchEvent(event);
     }
 
-    public void clearAllDataEntry(View view){
+    public void clearAllDataEntry(View view) {
         dataList.clear();
         notifyDataListChanged();
     }
 
-    public void showHideClearAll(){
+    public void showHideClearAll() {
         ViewSwitcher viewSwitcher = (ViewSwitcher) findViewById(R.id.view_switcher_clear_data_button);
 
-        if(dataList.size()>0){
+        if (dataList.size() > 0) {
             View view = viewSwitcher.getNextView();
-            if(view instanceof Button){
+            if (view instanceof Button) {
                 viewSwitcher.showNext();
             }
-        }else{
+        } else {
             viewSwitcher.showNext();
         }
     }
 
-    public void editDistance(View view){
+    public void editDistance(View view) {
         final EditText distance = (EditText) findViewById(R.id.edit_text_distance_input);
         distance.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
@@ -286,26 +300,85 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    public void toggleSelectInput(View view){
+    public void toggleSelectInput(View view) {
         ViewSwitcher inputViewSwitcher = (ViewSwitcher) findViewById(R.id.view_switcher_input);
         ViewSwitcher inputViewSwitcherButton = (ViewSwitcher) findViewById(R.id.view_switcher_input_button);
         ToggleButton clicked = (ToggleButton) view;
         ToggleButton unClicked;
         String clickedText = clicked.getTextOn().toString();
-        if(clickedText.equalsIgnoreCase("timer")) {
+        if (clickedText.equalsIgnoreCase("timer")) {
             unClicked = (ToggleButton) findViewById(R.id.toggle_manual);
-            if(inputViewSwitcher.getNextView().getId() == R.id.view_switch_timer_layout){
+            if (inputViewSwitcher.getNextView().getId() == R.id.view_switch_timer_layout) {
                 inputViewSwitcher.showNext();
                 inputViewSwitcherButton.showNext();
             }
-        }else{
+        } else {
             unClicked = (ToggleButton) findViewById(R.id.toggle_timer);
-            if(inputViewSwitcher.getNextView().getId() == R.id.view_switch_manual_edit_layout){
+            if (inputViewSwitcher.getNextView().getId() == R.id.view_switch_manual_edit_layout) {
                 inputViewSwitcher.showNext();
                 inputViewSwitcherButton.showNext();
             }
+            //enable send button on virtual keyboard
+            final EditText editText = (EditText) findViewById(R.id.edit_text_input);
+            editText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+                @Override
+                public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                    if (actionId == EditorInfo.IME_ACTION_SEND) {
+                        enterValue(v);
+                        return true;
+                    }
+                    return false;
+                }
+            });
         }
         clicked.setChecked(true);
         unClicked.setChecked(false);
+    }
+
+    protected void writeToDisk(){
+
+        String filename = "myfile";
+        FileOutputStream outputStream;
+        String output;
+
+        try {
+            if(dataList.size()>0){
+                outputStream = openFileOutput(filename, Context.MODE_PRIVATE);
+                for(int i=0; i<dataList.size(); i++) {
+                    output = Double.toString(dataList.get(i).getSpeedKMH()) +"\n";
+                    outputStream.write(output.getBytes());
+                }
+                outputStream.close();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    protected void readFromDisk(){
+        File file = new File(getFilesDir(),"myfile");
+
+//Read text from file
+//        StringBuilder text = new StringBuilder();
+
+        try {
+            BufferedReader br = new BufferedReader(new FileReader(file));
+            String line;
+
+            while ((line = br.readLine()) != null) {
+                Double speedKMH = Double.parseDouble(line);
+                DataEntry dataEntry = new DataEntry(speedKMH);
+                dataList.add(dataEntry);
+//                text.append(line);
+//                text.append('\n');
+            }
+            br.close();
+        }
+        catch (IOException e) {
+            //You'll need to add proper error handling here
+        }catch (Exception e){
+            //TODO catch the correct exception
+            ///
+        }
     }
 }
