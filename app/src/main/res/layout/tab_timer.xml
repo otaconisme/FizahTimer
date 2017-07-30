@@ -1,173 +1,179 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingTop="16dp"
-    android:paddingBottom="16dp"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:orientation="vertical"
-    tools:context="com.otaconisme.myapplication.MainActivity">
+    android:fillViewport="true">
 
-    <LinearLayout
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:orientation="horizontal">
-
-        <ToggleButton
-            android:id="@+id/toggle_timer"
-            android:onClick="toggleSelectInput"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="wrap_content"
-            android:checked="true"
-            android:textOn="@string/toggle_timer_text"
-            android:textOff="@string/toggle_timer_text"/>
-
-        <ToggleButton
-            android:id="@+id/toggle_manual"
-            android:onClick="toggleSelectInput"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="wrap_content"
-            android:textOn="@string/toggle_manual_text"
-            android:textOff="@string/toggle_manual_text"/>
-
-    </LinearLayout>
-
-    <ViewSwitcher
-        android:id="@+id/view_switcher_input"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:paddingBottom="16dp"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:paddingTop="16dp"
+        tools:context="com.otaconisme.myapplication.MainActivity">
 
         <LinearLayout
-            android:id="@+id/view_switch_timer_layout"
-            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:orientation="horizontal">
+
+            <ToggleButton
+                android:id="@+id/toggle_timer"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:checked="true"
+                android:onClick="toggleSelectInput"
+                android:textOff="@string/toggle_timer_text"
+                android:textOn="@string/toggle_timer_text" />
+
+            <ToggleButton
+                android:id="@+id/toggle_manual"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:onClick="toggleSelectInput"
+                android:textOff="@string/toggle_manual_text"
+                android:textOn="@string/toggle_manual_text" />
+
+        </LinearLayout>
+
+        <ViewSwitcher
+            android:id="@+id/view_switcher_input"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
             <LinearLayout
-                android:layout_gravity="center_horizontal"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
+                android:id="@+id/view_switch_timer_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
 
-                <TextView
-                    android:textSize="18sp"
-                    android:text="@string/distance_label"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-
-                <EditText
-                    android:id="@+id/edit_text_distance_input"
-                    android:onClick="editDistance"
-                    android:maxLength="8"
-                    android:textSize="18sp"
-                    android:inputType="numberDecimal"
-                    android:text="@string/distance_default"
-                    android:hint="@string/distance_hint"
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:imeOptions="actionSend" />
+                    android:layout_gravity="center_horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/distance_label"
+                        android:textSize="18sp" />
+
+                    <EditText
+                        android:id="@+id/edit_text_distance_input"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/distance_hint"
+                        android:imeOptions="actionSend"
+                        android:inputType="numberDecimal"
+                        android:maxLength="8"
+                        android:onClick="editDistance"
+                        android:text="@string/distance_default"
+                        android:textSize="18sp" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/timer_display"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:text="@string/timer_default"
+                    android:textSize="75sp" />
+
             </LinearLayout>
 
-            <TextView
-                android:id="@+id/timer_display"
-                android:layout_gravity="center_horizontal"
+            <LinearLayout
+                android:id="@+id/view_switch_manual_edit_layout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="75sp"
-                android:text="@string/timer_default"/>
+                android:orientation="vertical">
 
-        </LinearLayout>
+                <View
+                    android:layout_width="wrap_content"
+                    android:layout_height="18sp" />
 
-        <LinearLayout
-            android:orientation="vertical"
-            android:id="@+id/view_switch_manual_edit_layout"
-            android:layout_width="wrap_content"
+                <EditText
+                    android:id="@+id/edit_text_input"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="start"
+                    android:gravity="center_horizontal"
+                    android:hint="@string/manual_hint"
+                    android:imeOptions="actionSend"
+                    android:inputType="numberDecimal"
+                    android:maxLength="8"
+                    android:textSize="70sp" />
+
+
+            </LinearLayout>
+
+        </ViewSwitcher>
+
+        <ViewSwitcher
+            android:id="@+id/view_switcher_input_button"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <View
+            <Button
+                android:id="@+id/button_start_stop_timer"
                 android:layout_width="wrap_content"
-                android:layout_height="18sp"/>
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:onClick="startTimer"
+                android:text="@string/button_start_timer_text" />
 
-            <EditText
-                android:id="@+id/edit_text_input"
-                android:textSize="70sp"
-                android:imeOptions="actionSend"
-                android:inputType="numberDecimal"
-                android:ellipsize="start"
-                android:hint="@string/manual_hint"
-                android:maxLength="8"
-                android:gravity="center_horizontal"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+            <Button
+                android:id="@+id/button_enter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:onClick="enterValue"
+                android:text="@string/button_manual_enter_text" />
 
-
-        </LinearLayout>
-
-    </ViewSwitcher>
-
-    <ViewSwitcher
-        android:id="@+id/view_switcher_input_button"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <Button
-            android:id="@+id/button_start_stop_timer"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:onClick="startTimer"
-            android:text="@string/button_start_timer_text"/>
-
-        <Button
-            android:id="@+id/button_enter"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:onClick="enterValue"
-            android:text="@string/button_manual_enter_text"/>
-
-    </ViewSwitcher>
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="2dp"
-        android:layout_height="1dp"
-        android:background="@android:color/darker_gray"/>
-
-    <fragment
-        android:id="@+id/fragment1"
-        android:name="com.otaconisme.myapplication.DataListFragment"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="10"/>
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_marginTop="2dp"
-        android:layout_marginBottom="10dp"
-        android:layout_height="1dp"
-        android:background="@android:color/darker_gray"/>
-
-    <ViewSwitcher
-        android:id="@+id/view_switcher_clear_data_button"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        </ViewSwitcher>
 
         <View
             android:layout_width="match_parent"
-            android:layout_height="14sp"/>
+            android:layout_height="1dp"
+            android:layout_marginBottom="2dp"
+            android:layout_marginTop="10dp"
+            android:background="@android:color/darker_gray" />
 
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:onClick="clearAllDataEntry"
-            android:text="@string/button_clear_all_text"/>
+        <fragment
+            android:id="@+id/fragment1"
+            android:name="com.otaconisme.myapplication.DataListFragment"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="10" />
 
-    </ViewSwitcher>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginBottom="10dp"
+            android:layout_marginTop="2dp"
+            android:background="@android:color/darker_gray" />
 
-</LinearLayout>
+        <ViewSwitcher
+            android:id="@+id/view_switcher_clear_data_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="14sp" />
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:onClick="clearAllDataEntry"
+                android:text="@string/button_clear_all_text" />
+
+        </ViewSwitcher>
+
+    </LinearLayout>
+</ScrollView>

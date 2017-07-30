@@ -1,5 +1,6 @@
 package com.otaconisme.myapplication;
 
+import android.os.Bundle;
 import android.view.View;
 
 import com.github.mikephil.charting.charts.BarChart;
@@ -23,6 +24,7 @@ import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.github.mikephil.charting.utils.ColorTemplate;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 
 import static android.R.attr.cropToPadding;
@@ -34,9 +36,6 @@ import static android.R.attr.saveEnabled;
  */
 
 class Util {
-
-    public static BarChart barChart;
-    public static LineChart lineChart;
 
     public static String transformTime(long totalTime) {
 
@@ -64,10 +63,32 @@ class Util {
         return minute + ":" + second + "." + mili;
     }
 
+    public static double getPercentile(ArrayList<Double> input, double percentile){
+        ArrayList<Double> data = new ArrayList<>(input);
+        if(input.size()>1) {
+            Collections.sort(data);
+            double target = percentile * input.size()-1;
+            if (target % 1 == 0) {
+                if((int)target>0) {
+                    return data.get((int) target - 1);
+                }
+            }
+
+            //approximate value using linear
+            double x1 = data.get((int) target);
+            double y1 = (int) target;
+            double x2 = data.get((int) target+1);
+            double y2 = (int) target+1;
+            double gradient = (y2 - y1) / (x2 - x1);
+            double offset = y1 - (gradient * x1);
+            return (target - offset) / gradient;
+        }
+        return 0;
+    }
     public static double getMax(ArrayList<Double> input) {
         double max = 0.0;
         for (double in : input) {
-            if (in > max) {
+            if (in >= max) {
                 max = in;
             }
         }
@@ -75,12 +96,9 @@ class Util {
     }
 
     public static double getMin(ArrayList<Double> input) {
-        double min = 0.0;
+        double min = input.get(0);
         for (double in : input) {
-            if (min == 0.0) {
-                min = in;
-            }
-            if (in < min) {
+            if (in <= min) {
                 min = in;
             }
         }
@@ -109,34 +127,49 @@ class Util {
         return result;
     }
 
+    private static HashMap<Integer, String> getXAxisLabel(ArrayList<Double> inputData) {
+        HashMap<Integer, String> result = new HashMap<>();
+
+        double lowerLimit = Math.floor(Util.getMin(inputData) / 10) * 10;
+        double upperLimit = Math.ceil(Util.getMax(inputData) / 10) * 10;
+        double spaceSize = 10;
+        double spaces = (upperLimit-lowerLimit)/spaceSize;
+        //fix missing value
+        if(upperLimit==Util.getMax(inputData)){
+            spaces++;
+        }
+
+        for (int i = 1; i <= spaces; i++) {
+            int currentLowerLimit = (int) (lowerLimit + (i - 1) * spaceSize);
+            int currentUpperLimit = (int) (lowerLimit + i * spaceSize);
+            String label = "(" + currentLowerLimit + "-" + currentUpperLimit + ")";
+            result.put(i, label);
+        }
+
+        result.put(0, " ");//for line graph to start at 0
+        result.put((int) spaces + 1, " ");//for line graph to end with the last value
+
+        return result;
+    }
+
     private static ArrayList<BarEntry> generateFrequencyChartData(ArrayList<Double> inputData) {
         ArrayList<BarEntry> result = new ArrayList<>();
         HashMap<Double, Double> table = new HashMap<>();
-        double spaces = 1;
-        double maxSpace = 5;
 
         try {
 
             double lowerLimit = Math.floor(Util.getMin(inputData) / 10) * 10;
             double upperLimit = Math.ceil(Util.getMax(inputData) / 10) * 10;
-            if (inputData.size() > maxSpace) {
-                spaces = maxSpace;
-            } else {
-                spaces = inputData.size();
+            double spaceSize = 10;
+            double spaces = (upperLimit-lowerLimit)/spaceSize;
+            //fix missing value
+            if(upperLimit==Util.getMax(inputData)){
+                spaces++;
             }
 
-            double spaceSize = (upperLimit - lowerLimit) / spaces;
             for (double speed : inputData) {
                 for (double limit = lowerLimit; limit <= upperLimit; limit += spaceSize) {
-//                if (table.get(limit) == null) {
-//                    table.put(limit, 0.0);
-//                }
-//                if (table.get(limit) != null) {
-//                    if (speed < limit) {
-//                        double count = table.get(limit);
-//                        table.put(limit, ++count);
-//                    }
-//                }
+
                     if (table.get(limit) == null) {
                         table.put(limit, 0.0);
                     }
@@ -158,9 +191,53 @@ class Util {
         return result;
     }
 
+    private static ArrayList<Entry> generateHistoChartData(ArrayList<Double> inputData) {
+        ArrayList<Entry> result = new ArrayList<>();
+        HashMap<Double, Double> table = new HashMap<>();
+
+        try {
+
+            double lowerLimit = Math.floor(Util.getMin(inputData) / 10) * 10;
+            double upperLimit = Math.ceil(Util.getMax(inputData) / 10) * 10;
+            double spaceSize = 10;
+            double spaces = (upperLimit-lowerLimit)/spaceSize;
+            //fix missing value
+            if(upperLimit==Util.getMax(inputData)){
+                spaces++;
+            }
+
+            for (double speed : inputData) {
+                for (double limit = lowerLimit; limit <= upperLimit; limit += spaceSize) {
+                    if (table.get(limit) == null) {
+                        table.put(limit, 0.0);
+                    }
+
+                    if (speed >= limit && speed < (limit + spaceSize)) {
+                        table.put(limit, table.get(limit) + 1);
+                    }
+                }
+            }
+            //Start the graph with zero
+            result.add(new Entry(0, 0.0f));
+            for (int i = 1; i <= spaces; i++) {
+                float yvalue = 0.0f;
+                for (int j = i-1; j >= 0; j--) {
+                    double limit = lowerLimit + j * spaceSize;
+                    yvalue += (float) (double) table.get(limit);
+                }
+                yvalue = yvalue/inputData.size()*100;
+                result.add(new Entry(i, yvalue));
+            }
+            result.add(new Entry( (float)(spaces+1), 100));
+        } catch (Exception e) {
+            //TODO
+        }
+        return result;
+    }
+
     public static void generateFreqChart(final ArrayList<Double> inputData, View barChartView) {
 
-        barChart = (BarChart) barChartView;
+        BarChart barChart = (BarChart) barChartView;
 //        barChart.setMaxVisibleValueCount(60);
         barChart.setPinchZoom(false);
         barChart.setDrawBarShadow(false);
@@ -176,6 +253,7 @@ class Util {
         XAxis xAxis = barChart.getXAxis();
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
         xAxis.setDrawGridLines(false);
+        xAxis.setGranularity(1.000f);
         xAxis.setValueFormatter(new IAxisValueFormatter() {
             @Override
             public String getFormattedValue(float value, AxisBase axis) {
@@ -217,82 +295,9 @@ class Util {
         barChart.invalidate();
     }
 
-    private static ArrayList<Entry> generateHistoChartData(ArrayList<Double> inputData) {
-        ArrayList<Entry> result = new ArrayList<>();
-        HashMap<Double, Double> table = new HashMap<>();
-        double spaces;
-        double maxSpace = 5;
-
-        try {
-
-            double lowerLimit = Math.floor(Util.getMin(inputData) / 10) * 10;
-            double upperLimit = Math.ceil(Util.getMax(inputData) / 10) * 10;
-            if (inputData.size() > maxSpace) {
-                spaces = maxSpace;
-            } else {
-                spaces = inputData.size();
-            }
-
-            double spaceSize = (upperLimit - lowerLimit) / spaces;
-            for (double speed : inputData) {
-                for (double limit = lowerLimit; limit <= upperLimit; limit += spaceSize) {
-                    if (table.get(limit) == null) {
-                        table.put(limit, 0.0);
-                    }
-
-                    if (speed >= limit && speed < (limit + spaceSize)) {
-                        table.put(limit, table.get(limit) + 1);
-                    }
-                }
-            }
-            //Start the graph with zero
-            result.add(new Entry(0, 0.0f));
-            for (int i = 0; i <= spaces; i++) {
-                float yvalue = 0.0f;
-                for (int j = i; j >= 0; j--) {
-                    double limit = lowerLimit + j * spaceSize;
-                    yvalue += (float) (double) table.get(limit);
-                }
-                result.add(new Entry(i + 1, yvalue));
-            }
-            //copy last value
-            //result.add(new Entry( (float)(spaces+2), (float) (double) table.get( spaces+2)));
-        } catch (Exception e) {
-            //TODO
-        }
-        return result;
-    }
-
-    private static HashMap<Integer, String> getXAxisLabel(ArrayList<Double> inputData) {
-        HashMap<Integer, String> result = new HashMap<>();
-
-        double lowerLimit = Math.floor(Util.getMin(inputData) / 10) * 10;
-        double upperLimit = Math.ceil(Util.getMax(inputData) / 10) * 10;
-        double spaces;
-        double maxSpace = 5;
-        if (inputData.size() > maxSpace) {
-            spaces = maxSpace;
-        } else {
-            spaces = inputData.size();
-        }
-
-        double spaceSize = (upperLimit - lowerLimit) / spaces;
-
-        for (int i = 1; i <= spaces; i++) {
-            int currentLowerLimit = (int) (lowerLimit + (i - 1) * spaceSize);
-            int currentUpperLimit = (int) (lowerLimit + i * spaceSize);
-            String label = "(" + currentLowerLimit + "-" + currentUpperLimit + ")";
-            result.put(i, label);
-        }
-        //for line graph to start at 0
-        result.put(0, "");
-        result.put((int) spaces + 1, "");
-        return result;
-    }
-
     public static void generateHistoChart(final ArrayList<Double> inputData, View lineChartView) {
 
-        lineChart = (LineChart) lineChartView;
+        LineChart lineChart = (LineChart) lineChartView;
         //barChart.setMaxVisibleValueCount(60);
         lineChart.setPinchZoom(false);
         lineChart.setDrawGridBackground(false);
@@ -301,12 +306,13 @@ class Util {
         lineChart.animateY(2500);
 
         Description description = new Description();
-        description.setText("Collective");
+        description.setText("Percentage(%) vs Cumulative");
         lineChart.setDescription(description);
 
         XAxis xAxis = lineChart.getXAxis();
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
         xAxis.setDrawGridLines(false);
+        xAxis.setGranularity(1.000f);
         xAxis.setValueFormatter(new IAxisValueFormatter() {
             @Override
             public String getFormattedValue(float value, AxisBase axis) {
@@ -316,12 +322,12 @@ class Util {
 
         YAxis yAxisLeft = lineChart.getAxisLeft();
         yAxisLeft.setGranularityEnabled(true);
-        yAxisLeft.setGranularity(1.000f);
+        yAxisLeft.setGranularity(0.01f);
         yAxisLeft.setAxisMinimum(0.0f);
 
         YAxis yAxisRight = lineChart.getAxisRight();
         yAxisRight.setGranularityEnabled(true);
-        yAxisRight.setGranularity(1.000f);
+        yAxisRight.setGranularity(0.01f);
         yAxisRight.setAxisMinimum(0.0f);
 
         LineDataSet set;
@@ -337,7 +343,7 @@ class Util {
             //set.setColors(ColorTemplate.VORDIPLOM_COLORS);
             set.setDrawValues(true);
             set.setMode(LineDataSet.Mode.CUBIC_BEZIER);
-            //set.setDr
+            set.setCubicIntensity(0.1f);
 
             ArrayList<ILineDataSet> dataSets = new ArrayList<>();
             dataSets.add(set);

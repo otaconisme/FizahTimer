@@ -245,6 +245,12 @@ public class MainActivity extends AppCompatActivity {
         max.setText(String.valueOf(Util.getMax(input)));
         TextView var = (TextView) findViewById(R.id.variance_value);
         var.setText(String.valueOf(Util.getVariance(input, Util.getAverage(input))));
+        TextView percentile85 = (TextView) findViewById(R.id.percentile_85_value);
+        percentile85.setText(String.valueOf(Util.getPercentile(input, 0.85)));
+        TextView percentile50 = (TextView) findViewById(R.id.percentile_50_value);
+        percentile50.setText(String.valueOf(Util.getPercentile(input, 0.50)));
+        TextView percentile25 = (TextView) findViewById(R.id.percentile_25_value);
+        percentile25.setText(String.valueOf(Util.getPercentile(input, 0.25)));
         View freqChartView = findViewById(R.id.chart1);
         if (freqChartView != null) {
             Util.generateFreqChart(input, freqChartView);
@@ -278,6 +284,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void clearAllDataEntry(View view) {
         dataList.clear();
+        writeToDisk();
         notifyDataListChanged();
     }
 
@@ -347,7 +354,7 @@ public class MainActivity extends AppCompatActivity {
         String output;
 
         try {
-            if (dataList.size() > 0) {
+            if (dataList.size() >= 0) {
                 outputStream = openFileOutput(filename, Context.MODE_PRIVATE);
                 for (int i = 0; i < dataList.size(); i++) {
                     output = Double.toString(dataList.get(i).getSpeedKMH()) + "\n";
@@ -367,6 +374,9 @@ public class MainActivity extends AppCompatActivity {
             BufferedReader br = new BufferedReader(new FileReader(file));
             String line;
 
+            //clear data list and repopulate
+            dataList.clear();
+
             while ((line = br.readLine()) != null) {
                 Double speedKMH = Double.parseDouble(line);
                 DataEntry dataEntry = new DataEntry(speedKMH);
@@ -379,5 +389,11 @@ public class MainActivity extends AppCompatActivity {
             //TODO catch the correct exception
             ///
         }
+    }
+
+    @Override
+    public void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        notifyDataListChanged();
     }
 }
