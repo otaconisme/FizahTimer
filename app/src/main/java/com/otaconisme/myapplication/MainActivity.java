@@ -54,6 +54,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        readFromDisk();
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
         //destroy thread;
@@ -66,7 +72,6 @@ public class MainActivity extends AppCompatActivity {
 
         dataList = new ArrayList<>();
         dataEntryAdapter = new DataEntryAdapter(dataList, this);
-        readFromDisk();
         setContentView(R.layout.activity_main);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -93,7 +98,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         */
-
     }
 
 
@@ -175,7 +179,6 @@ public class MainActivity extends AppCompatActivity {
             mHandler.removeCallbacks(startTimer);
             //update to list
             dataList.add(new DataEntry(totalTime, gDistanceInput));
-
             notifyDataListChanged();
         }
     }
@@ -203,8 +206,6 @@ public class MainActivity extends AppCompatActivity {
         runOnUiThread(new Runnable() {
             public void run() {
                 dataEntryAdapter.notifyDataSetChanged();
-//                ListView lv = (ListView) findViewById(R.id.fragment1);
-//                lv.setSelection(dataEntryAdapter.getCount() - 1);
                 if (dataList.size() > 0) {
                     generateReport();
                 }
@@ -244,9 +245,13 @@ public class MainActivity extends AppCompatActivity {
         max.setText(String.valueOf(Util.getMax(input)));
         TextView var = (TextView) findViewById(R.id.variance_value);
         var.setText(String.valueOf(Util.getVariance(input, Util.getAverage(input))));
-        View barChartView = findViewById(R.id.chart1);
-        if (barChartView != null) {
-            Util.generateBarChart(input, barChartView);
+        View freqChartView = findViewById(R.id.chart1);
+        if (freqChartView != null) {
+            Util.generateFreqChart(input, freqChartView);
+        }
+        View histoChartView = findViewById(R.id.chart2);
+        if (histoChartView != null) {
+            Util.generateHistoChart(input, histoChartView);
         }
     }
 
@@ -358,9 +363,6 @@ public class MainActivity extends AppCompatActivity {
     protected void readFromDisk() {
         File file = new File(getFilesDir(), "myfile");
 
-//Read text from file
-//        StringBuilder text = new StringBuilder();
-
         try {
             BufferedReader br = new BufferedReader(new FileReader(file));
             String line;
@@ -369,8 +371,6 @@ public class MainActivity extends AppCompatActivity {
                 Double speedKMH = Double.parseDouble(line);
                 DataEntry dataEntry = new DataEntry(speedKMH);
                 dataList.add(dataEntry);
-//                text.append(line);
-//                text.append('\n');
             }
             br.close();
         } catch (IOException e) {
